@@ -46,9 +46,15 @@ def test_api(request, username):
 
 
     processed_data = {
-        "Username" : data.get("login"),
-        "repo_count" : repo_count,
-        "total_stars" : total_stars,
-        "top_language" : top_language
+        "Username" : username,
+        "profile" : {
+            "name" : data.get("name") or "N/A",
+            "public_repos" : data.get("public_repos" , 0),
+            "followers" : data.get("followers" , 0)
+        },
+        "insights" : {
+            "top_language" : top_language or "Unknown",
+            "total_stars" : total_stars
+        }
     }
     return Response(processed_data , status=response.status_code)
