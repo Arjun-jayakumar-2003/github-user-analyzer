@@ -8,6 +8,11 @@ from .models import GitHubUser
 @api_view(['GET'])
 def test_api(request, username):
 
+    existing_user = GitHubUser.objects.filter(username=username).first()
+
+    if existing_user:
+        return Response(existing_user.data, status=200)
+
     token = os.environ.get("GITHUB_TOKEN")
     headers = {
         "Authorization" : f"token {token}"
@@ -61,7 +66,7 @@ def test_api(request, username):
     
     GitHubUser.objects.update_or_create(
         username=username,
-        data=processed_data
+        defaults={"data": processed_data}
     )
 
     return Response(processed_data , status=response.status_code)
