@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import requests
 import os
+from .models import GitHubUser
 
 @api_view(['GET'])
 def test_api(request, username):
@@ -57,4 +58,10 @@ def test_api(request, username):
             "total_stars" : total_stars
         }
     }
+    
+    GitHubUser.objects.update_or_create(
+        username=username,
+        data=processed_data
+    )
+
     return Response(processed_data , status=response.status_code)
