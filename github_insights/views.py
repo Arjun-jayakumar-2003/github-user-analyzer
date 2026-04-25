@@ -18,6 +18,7 @@ def test_api(request, username):
     existing_user = GitHubUser.objects.filter(username=username).first()
 
     if existing_user:
+        cache.set(cache_key, existing_user.data, timeout=60 * 60)
         return Response(existing_user.data, status=200)
 
     token = os.environ.get("GITHUB_TOKEN")
