@@ -4,9 +4,16 @@ from rest_framework.response import Response
 import requests
 import os
 from .models import GitHubUser
+from django.core.cache import cache
 
 @api_view(['GET'])
 def test_api(request, username):
+
+    cache_key = f"github_user:{username}"
+    cached_data = cache.get(cache_key)
+
+    if cached_data is not None:
+        return Response(cached_data, status=200)
 
     existing_user = GitHubUser.objects.filter(username=username).first()
 
@@ -68,5 +75,7 @@ def test_api(request, username):
         username=username,
         defaults={"data": processed_data}
     )
+
+    cache.set(cache_key, processed_data, timeout=60 * 60)
 
     return Response(processed_data , status=response.status_code)
